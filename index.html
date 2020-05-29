@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>ling-notes</title>
+
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <style type="text/css">
+    </style>
+
+</head>
+
+
+
+<body>
+
+<div class="bodywrap" id="bodywrap">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">ling-notes</a>
+    </nav>
+
+    <div class="container my-5 page hiddent" id="page-import"><div class="container py-2">
+        <div class="row">
+            <div class="col">
+                <form name="file-form" class="container">
+                    <div class="row" id="filePicker">
+                        <!-- <label for="file-input" class="col-md-2 my-2 col-form-label text-md-right">选择文件：</label> -->
+                        <div class="col-md-8 my-2">
+                            <input type="file" class="form-control" name="file-input" id="file-input" name="file" multiple="multiple" accept=".json, .md, .txt" />
+                        </div>
+                        <div class="btn-group col-md-4 my-2">
+                            <button type="button" name="do_import" id="do_import" class="btn btn-primary" v-on:click="onImport">导入</button>
+                            <button type="button" name="do_export" id="do_export" class="btn btn-info">导出</button>
+                            <button type="button" name="do_toggle" id="do_toggle" class="btn btn-secondary" v-on:click="readonly=(1-readonly)">换视</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div></div>
+
+    <div class="container my-5 py-2 page" id="page-read" :class="{'hidden': readonly ? false : true}"><div class="container card-wrap py-1">
+
+            <div v-for="chunk in chunks" class="row my-1">
+                <div v-if="chunk.kind=='title'||chunk.kind=='plain'" class="col" v-html="markup(chunk.origin)"></div>
+                <div v-if="chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence'" class="col" v-html="markup(chunk.abs)" :class="chunk._phonetic ? 'col-3' : 'col-6'"></div>
+                <div v-if="(chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence')&&chunk._phonetic" class="col col-3" v-html="markup(chunk._phonetic)"></div>
+                <div v-if="(chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence')&&chunk._definition" class="col col-6" v-html="markup(chunk._definition)"></div>
+            </div>
+
+    </div></div>
+
+    <div class="container my-5 py-2 page" id="page-edit" :class="{'hidden': readonly ? true : false}"><div class="container card-wrap py-1">
+
+            <div v-for="chunk in chunks" class="row my-1">
+                <div v-if="chunk.kind=='title'||chunk.kind=='plain'" class="col">
+                    <textarea class="form-control form-control-sm" rows="1" v-model="chunk.origin"></textarea>
+                </div>
+                <div v-if="chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence'" class="col col-3">
+                    <input class="form-control form-control-sm" type="text" v-model="chunk._definition">
+                </div>
+                <div v-if="chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence'" class="col col-3">
+                    <textarea class="form-control form-control-sm" rows="1" v-model="chunk.abs"></textarea>
+                </div>
+                <div v-if="chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence'" class="col col-3">
+                    <input class="form-control form-control-sm" type="text" v-model="chunk._phonetic">
+                </div>
+                <div v-if="chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence'" class="col col-3">
+                    <div class="input-group">
+                        <input class="form-control form-control-sm" type="text" v-model="chunk._audio_file">
+                        <input class="form-control form-control-sm" type="text" v-model="chunk._audio_range_start">
+                        <input class="form-control form-control-sm" type="text" v-model="chunk._audio_range_end">
+                    </div>
+                </div>
+            </div>
+
+    </div></div>
+
+</div>
+
+
+
+
+
+<footer class="pt-4 pb-2 bg-dark text-white" id="footer">
+    <div class="container text-center">
+        <p>Github: <a href="https://github.com/gitforziio/ling-notes-reader" target="_blank">@gitforziio/ling-notes-reader</a></p>
+    </div>
+</footer>
+
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+<!-- <script src="https://cdn.bootcss.com/d3/5.12.0/d3.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/xregexp/3.2.0/xregexp-all.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/marked/1.1.0/marked.min.js"></script>
+
+<script type="text/javascript" src="js/FileSaver.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+
+<script type="text/javascript">
+</script>
+
+</body>
+
+</html>
