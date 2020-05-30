@@ -29,39 +29,49 @@ var the_vue = new Vue({
     },
     computed: {
         // audio: function() {
-        //     return document.getElementById(`audio`) ? document.getElementById(`audio`) : {"currentTime": 0};
+            // let self = this;
+        //     return self.$refs.audio ? self.$refs.audio : {"currentTime": 0};
         // },
         // audio_currentTime: function() {
-        //     return this.audio.currentTime;
+            // let self = this;
+        //     return self.audio.currentTime;
         // },
         // player_range_should_end: function() {
-        //     return this.audio_currentTime*1000 >= this.player.range.end;
+            // let self = this;
+        //     return self.audio_currentTime*1000 >= self.player.range.end;
         // },
     },
     methods: {
-        addEventListeners: function () {
+        addEventListeners: function() {
             let self = this;
             self.$refs.audio.addEventListener('timeupdate', self.onTimeUpdate);
             self.$refs.audio.addEventListener('canplay', self._durationUpdate);
         },
-        removeEventListeners: function () {
+        removeEventListeners: function() {
             let self = this;
             self.$refs.audio.removeEventListener('timeupdate', self.onTimeUpdate);
             self.$refs.audio.removeEventListener('canplay', self._durationUpdate);
         },
-        onTimeUpdate: function () {
+        onTimeUpdate: function() {
             let self = this;
             self.player.currentTime = self.$refs.audio.currentTime;
             if (self.player.range.working && self.player.currentTime*1000 >= self.player.range.end) {
                 self.$refs.audio.pause();
                 self.player.playing = 0;
+                if (self.player.range.times_left > 0) {
+                    self.$refs.audio.currentTime = self.player.range.start/1000;
+                    self.player.range.times_left -= 1;
+                    self.$refs.audio.play();
+                    self.player.playing = 1;
+                };
             };
         },
-        onDurationUpdate: function () {
+        onDurationUpdate: function() {
             let self = this;
             self.player.duration = self.$refs.audio.duration;
         },
         onImportAudio: function() {
+            let self = this;
             let audioFileList = document.forms["audio-form"]["audio-input"].files;
             // console.log(audioFileList);
             let audio_meta_list = [];
@@ -75,46 +85,57 @@ var the_vue = new Vue({
                 });
                 idx += 1;
             }
-            this.audio_meta_list = audio_meta_list;
-            this.current_audio_meta = audio_meta_list[0];
-            // console.log(this.current_audio_meta);
+            self.audio_meta_list = audio_meta_list;
+            self.current_audio_meta = audio_meta_list[0];
+            // console.log(self.current_audio_meta);
         },
         setMeta: function(meta) {
-            console.log(meta);
-            let au = this.audio_meta_list.filter(m => m.name == meta._au_file)[0];
-            if (au) {this.current_audio_meta = au};
-            if (meta._au_start + meta._au_end) {
-                au_start = Math.min(meta._au_start, meta._au_end);
-                au_end = Math.max(meta._au_start, meta._au_end);
-                this.player.range.start = au_start;
-                this.player.range.start = au_end;
+            let self = this;
+            let au = self.audio_meta_list.filter(m => m.name == meta._au_file)[0];
+            if (au) {self.current_audio_meta = au};
+            let audio_start = parseInt(meta._au_start);
+            let audio_end = parseInt(meta._au_end);
+            if (!isNaN(audio_start) && !isNaN(audio_end)) {
+                au_start = audio_start < audio_end ? audio_start : audio_end;
+                au_end = audio_start > audio_end ? audio_start : audio_end;
+                self.player.range.start = au_start;
+                self.player.range.end = au_end;
             };
         },
         playRange: function(meta) {
-            this.setMeta(meta);
-            this.$refs.audio.currentTime = this.player.range.start/1000;
-            this.$refs.audio.play();
-            this.player.playing = 1;
+            let self = this;
+            self.setMeta(meta);
+            self.player.range.working = 1;
+            self.player.range.times_left = self.player.range.times;
+            self.$refs.audio.currentTime = self.player.range.start/1000;
+            self.$refs.audio.play();
+            self.player.playing = 1;
         },
         playOrPause: function() {
-            this.player.playing = 1 - this.player.playing;
-            if (this.player.playing) {
-                this.$refs.audio.play();
+            let self = this;
+            self.player.playing = 1 - self.player.playing;
+            if (self.player.playing) {
+                self.$refs.audio.play();
             } else {
-                this.$refs.audio.pause();
+                self.$refs.audio.pause();
             }
         },
+        jumpOut: function() {
+            let self = this;
+            self.player.range.working = 0;
+        },
         speedUp: function() {
-            let it = this.player.rate;
-            if (it < 4) {it += 0.25};
-            document.getElementById(`audio`).playbackRate = it;
+            let self = this;
+            if (self.player.rate < 4) {self.player.rate += 0.25};
+            self.$refs.audio.playbackRate = self.player.rate;
         },
         speedDown: function() {
-            let it = this.player.rate;
-            if (it > 0) {it -= 0.25};
-            document.getElementById(`audio`).playbackRate = it;
+            let self = this;
+            if (self.player.rate > 0) {self.player.rate -= 0.25};
+            self.$refs.audio.playbackRate = self.player.rate;
         },
         onImport: function() {
+            let self = this;
             let fileList = document.forms["file-form"]["file-input"].files;
             // console.log(fileList);
             let file_meta_list = [];
@@ -129,23 +150,24 @@ var the_vue = new Vue({
                 });
                 idx += 1;
             }
-            this.file_meta_list = file_meta_list;
-            this.current_file_meta = file_meta_list[0];
-            // console.log(this.current_file_meta);
-            this.makeContent();
+            self.file_meta_list = file_meta_list;
+            self.current_file_meta = file_meta_list[0];
+            // console.log(self.current_file_meta);
+            self.makeContent();
         },
         makeContent: function() {
+            let self = this;
             let reader = new FileReader();
-            let that = this;
-            reader.readAsText(that.current_file_meta.file, "utf-8");
+            reader.readAsText(self.current_file_meta.file, "utf-8");
             reader.onload = function(evt) {
-                that.current_content = this.result;
-                // console.log(that.current_content);
-                that.makeChunks();
+                self.current_content = this.result;
+                // console.log(self.current_content);
+                self.makeChunks();
             }
         },
         makeChunks: function() {
-            let lines = this.current_content.split("\n");
+            let self = this;
+            let lines = self.current_content.split("\n");
             let chunks = [];
             let current_au_file = "";
             let current_title = "";
@@ -159,30 +181,22 @@ var the_vue = new Vue({
                 let chunk = {};
                 chunk.origin = line;
                 if (line == "") {
-                    chunk.kind = "br";
+                    chunk._type = "br";
                     chunk.abs = "";
-                } else if (line.slice(0, 3) == "【音】") {
-                    current_au_file = line.slice(3);
-                    push_last = false;
-                } else if (line.slice(0, 3) == "【词】") {
-                    chunk.kind = "word";
-                    let cc = line.slice(3);
-                    this.makeCC(chunk, cc);
-                } else if (line.slice(0, 3) == "【短】") {
-                    chunk.kind = "phrase";
-                    let cc = line.slice(3);
-                    this.makeCC(chunk, cc);
-                } else if (line.slice(0, 3) == "【句】") {
-                    chunk.kind = "sentence";
-                    let cc = line.slice(3);
-                    this.makeCC(chunk, cc);
                 } else if (line.slice(0, 1) == "#") {
-                    chunk.kind = "title";
+                    chunk._type = "title";
                     chunk.abs = XRegExp.replace(line, /^#+/, '').trim();
                     current_title = chunk.abs;
                     current_title_level = XRegExp.exec(line, /^#+/)[0].length;
                     should_update_title_idx = true;
                     // current_title_idx = idx;
+                } else if (line.slice(0, 3) == "【音】") {
+                    current_au_file = line.slice(3);
+                    push_last = false;
+                } else if (line.slice(0, 3) == "【词】"||line.slice(0, 3) == "【短】"||line.slice(0, 3) == "【句】") {
+                    chunk._type = line.slice(1, 2);//"word";"phrase";"sentence";
+                    let cc = line.slice(3);
+                    self.makeCC(chunk, cc);
                 } else {
                     if (last_content) {
                         last_content = `${last_content}\n${line}`
@@ -215,8 +229,8 @@ var the_vue = new Vue({
                     idx += 1;
                 };
             };
-            this.chunks = chunks;
-            // console.log(this.chunks);
+            self.chunks = chunks;
+            // console.log(self.chunks);
         },
         makeCC: function(chunk_, cc_) {
             XRegExp.forEach(cc_, /【([^\|]+)\|([^】]+)】/, (match, i) => {
@@ -224,8 +238,12 @@ var the_vue = new Vue({
                 chunk_[`_${match[1]}`] = match[2];
             });
             chunk_.abs = XRegExp.replace(cc_, /【([^\|]+)\|([^】]+)】/g, '').trim();
+            if (chunk_._au_range) {
+                let rg = JSON.parse(chunk_._au_range);
+                chunk_._au_start = rg[0];chunk_._au_end = rg[1];
+            };
             if (!chunk_._def) {chunk_._def = "";};
-            if (!chunk_._phonetic) {chunk_._phonetic = "";};
+            if (!chunk_._phon) {chunk_._phon = "";};
             if (!chunk_._note) {chunk_._note = "";};
             if (!chunk_._au_file) {chunk_._au_file = "";};
             if (!chunk_._au_start) {chunk_._au_start = "";};
@@ -237,10 +255,12 @@ var the_vue = new Vue({
         },
     },
     mounted() {
-        this.addEventListeners()
+        let self = this;
+        self.addEventListeners();
     },
     beforeDestroyed() {
-        this.removeEventListeners()
+        let self = this;
+        self.removeEventListeners();
     }
 })
 
