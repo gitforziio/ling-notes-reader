@@ -252,6 +252,8 @@ var the_vue = new Vue({
                     if (chunk._au_file) {text += `【au_file|${chunk._au_file}】`;};
                     if (!isNaN(parseInt(chunk._au_start)) && !isNaN(parseInt(chunk._au_end))) {
                         text += `【au_range|[${chunk._au_start}, ${chunk._au_end}]】`;
+                    } else {
+                        text += `【au_range|[xx_yy]】`;
                     };
                     text_list.push(text);
                 } else {text_list.push("【???】");};

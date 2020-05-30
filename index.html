@@ -87,8 +87,8 @@
     <div class="container my-5 py-2 page" id="page-read" :class="{'hidden': readonly ? false : true}"><div class="container py-1">
 
             <div class="row my-1">
-                <div v-for="chunk in chunks" class="col" :class="(chunk._type=='词') ? 'col-6 col-md-3' : ((chunk._type=='短'||chunk._type=='句') ? 'col-12 col-lg-6' : 'col-12')">
-                    <div :class="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句') ? 'card-wrap' : ''">
+                <div v-for="chunk in chunks" class="col" :class="(chunk._type=='词') ? 'col-6 col-md-3' : ((chunk._type=='句') ? 'col-12 col-lg-6' : ((chunk._type=='短') ? 'col-12 col-md-6 col-xl-3' : 'col-12'))">
+                    <div :class="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句') ? 'card-wrap' : 'card-not'">
                         <div v-if="chunk._type=='title'||chunk._type=='plain'" v-html="markup(chunk.origin)">
                         </div>
                         <div v-if="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句')" v-on:click="playRange(chunk)">
@@ -98,27 +98,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- <div v-if="chunk._type=='title'||chunk._type=='plain'" class="col-12" v-html="markup(chunk.origin)">
-                </div>
-                <div v-if="(chunk._type=='词')" class="col-6 col-md-3 card-wrap">
-                    <div class="chunk-def" v-html="markup(chunk._def)" v-if="chunk._def"></div>
-                    <div class="chunk-def" v-if="!chunk._def"></div>
-                    <div class="chunk-abs" v-html="markup(chunk.abs)" v-on:click="playRange(chunk)"></div>
-                    <div class="chunk-phon" v-html="markup(chunk._phon)" v-if="chunk._phon"></div>
-                    <div class="chunk-phon" v-if="!chunk._phon"></div>
-                </div>
-                <div v-if="(chunk._type=='短'||chunk._type=='句')" class="col-6 col-md-6 card-wrap">
-                    <div class="chunk-def" v-html="markup(chunk._def)" v-if="chunk._def"></div>
-                    <div class="chunk-def" v-if="!chunk._def"></div>
-                    <div class="chunk-abs" v-html="markup(chunk.abs)" v-on:click="playRange(chunk)"></div>
-                    <div class="chunk-phon" v-html="markup(chunk._phon)" v-if="chunk._phon"></div>
-                    <div class="chunk-phon" v-if="!chunk._phon"></div>
-                </div> -->
-                <!-- <div v-if="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句')&&chunk._def" class="col col-4" v-html="markup(chunk._def)"></div>
-                <div v-if="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句')&&!chunk._def" class="col col-4"></div> -->
-                <!-- <div v-if="chunk._type=='词'||chunk._type=='短'||chunk._type=='句'" class="col card-wrap" v-html="markup(chunk.abs)" :class="chunk._phon ? 'col-5' : 'col-8'" v-on:click="playRange(chunk)"></div>
-                <div v-if="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句')&&chunk._phon" class="col col-3" v-html="markup(chunk._phon)"></div>
-                <div v-if="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句')&&!chunk._phon" class="col col-3"></div> -->
             </div>
 
     </div></div>
