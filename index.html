@@ -25,6 +25,43 @@
         <a class="navbar-brand" href="#">ling-notes</a>
     </nav>
 
+    <div class="container my-5 page hiddent" id="page-audio"><div class="container py-2">
+        <div class="row">
+            <div class="col">
+                <form name="audio-form" class="container">
+                    <div class="row" id="audioPicker">
+                        <div class="col-md-8 my-2">
+                            <input type="file" class="form-control" name="audio-input" id="audio-input" multiple="multiple" accept="audio/*" />
+                        </div>
+                        <div class="btn-group col-md-4 my-2">
+                            <button type="button" name="do_import_audio" id="do_import_audio" class="btn btn-primary" v-on:click="onImportAudio">载入</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div></div>
+
+    <div class="container my-5 page hiddent" id="page-player" _v-if="current_audio_meta&&current_audio_meta.url"><div class="container py-2">
+        <div class="row audio-wrap my-3" :id="`audio-wrap`">
+            <div class="col audio-file-name">
+                <p><span>{{ current_audio_meta.name }}</span><span v-if="player.range.working">[{{ player.range.start }}-{{ player.range.end }}]</span><span v-if="player.rate != 1">（{{ player.rate }}倍速）</span><span>{{ player.currentTime }}</span><span>{{ player.range_should_end }}</span></p>
+            </div>
+            <div class="col audio-control">
+                <div class="btn-group btn-group-sm">
+                    <button type="button" name="play" id="player-play" class="btn btn-light" v-if="1-player.playing" v-on:click="playOrPause()">播放</button>
+                    <button type="button" name="pause" id="player-pause" class="btn btn-light" v-if="player.playing" v-on:click="playOrPause()">暂停</button>
+                    <button type="button" name="stop" id="player-stop" class="btn btn-light">停止</button>
+                    <button type="button" name="speedDown" id="player-speedDown" class="btn btn-light" v-on:click="speedDown()">减速</button>
+                    <button type="button" name="speedUp" id="player-speedUp" class="btn btn-light" v-on:click="speedUp()">加速</button>
+                </div>
+            </div>
+            <div class="col audio-box">
+                <audio ref="audio" _v-on:timeupdate="onTimeUpdate" _v-if="current_audio_meta.url" :src="current_audio_meta.url||null" :id="`audio`" controls="controls" :loop="player.loop">[您的浏览器不支持 h5 的 audio 标签。]</audio>
+            </div>
+        </div>
+    </div></div>
+
     <div class="container my-5 page hiddent" id="page-import"><div class="container py-2">
         <div class="row">
             <div class="col">
@@ -32,7 +69,7 @@
                     <div class="row" id="filePicker">
                         <!-- <label for="file-input" class="col-md-2 my-2 col-form-label text-md-right">选择文件：</label> -->
                         <div class="col-md-8 my-2">
-                            <input type="file" class="form-control" name="file-input" id="file-input" name="file" multiple="multiple" accept=".json, .md, .txt" />
+                            <input type="file" class="form-control" name="file-input" id="file-input" multiple="multiple" accept=".json, .md, .txt" />
                         </div>
                         <div class="btn-group col-md-4 my-2">
                             <button type="button" name="do_import" id="do_import" class="btn btn-primary" v-on:click="onImport">导入</button>
@@ -49,9 +86,11 @@
 
             <div v-for="chunk in chunks" class="row my-1">
                 <div v-if="chunk.kind=='title'||chunk.kind=='plain'" class="col" v-html="markup(chunk.origin)"></div>
-                <div v-if="chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence'" class="col" v-html="markup(chunk.abs)" :class="chunk._phonetic ? 'col-3' : 'col-6'"></div>
+                <div v-if="(chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence')&&chunk._def" class="col col-4" v-html="markup(chunk._def)"></div>
+                <div v-if="(chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence')&&!chunk._def" class="col col-4"></div>
+                <div v-if="chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence'" class="col" v-html="markup(chunk.abs)" :class="chunk._phonetic ? 'col-5' : 'col-8'" v-on:click="playRange(chunk)"></div>
                 <div v-if="(chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence')&&chunk._phonetic" class="col col-3" v-html="markup(chunk._phonetic)"></div>
-                <div v-if="(chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence')&&chunk._definition" class="col col-6" v-html="markup(chunk._definition)"></div>
+                <div v-if="(chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence')&&!chunk._phonetic" class="col col-3"></div>
             </div>
 
     </div></div>
@@ -63,7 +102,7 @@
                     <textarea class="form-control form-control-sm" rows="1" v-model="chunk.origin"></textarea>
                 </div>
                 <div v-if="chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence'" class="col col-3">
-                    <input class="form-control form-control-sm" type="text" v-model="chunk._definition">
+                    <input class="form-control form-control-sm" type="text" v-model="chunk._def">
                 </div>
                 <div v-if="chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence'" class="col col-3">
                     <textarea class="form-control form-control-sm" rows="1" v-model="chunk.abs"></textarea>
@@ -73,9 +112,9 @@
                 </div>
                 <div v-if="chunk.kind=='word'||chunk.kind=='phrase'||chunk.kind=='sentence'" class="col col-3">
                     <div class="input-group">
-                        <input class="form-control form-control-sm" type="text" v-model="chunk._audio_file">
-                        <input class="form-control form-control-sm" type="text" v-model="chunk._audio_range_start">
-                        <input class="form-control form-control-sm" type="text" v-model="chunk._audio_range_end">
+                        <input class="form-control form-control-sm" type="text" v-model="chunk._au_file">
+                        <input class="form-control form-control-sm" type="text" v-model="chunk._au_start">
+                        <input class="form-control form-control-sm" type="text" v-model="chunk._au_end">
                     </div>
                 </div>
             </div>
