@@ -239,8 +239,10 @@ var the_vue = new Vue({
             });
             chunk_.abs = XRegExp.replace(cc_, /【([^\|]+)\|([^】]+)】/g, '').trim();
             if (chunk_._au_range) {
-                let rg = JSON.parse(chunk_._au_range);
-                chunk_._au_start = rg[0];chunk_._au_end = rg[1];
+                if (chunk_._au_range != "[xx_yy]") {
+                    let rg = JSON.parse(chunk_._au_range);
+                    chunk_._au_start = rg[0];chunk_._au_end = rg[1];
+                };
             };
             if (!chunk_._def) {chunk_._def = "";};
             if (!chunk_._phon) {chunk_._phon = "";};
