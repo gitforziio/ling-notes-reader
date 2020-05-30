@@ -60,9 +60,9 @@ var the_vue = new Vue({
                 self.player.playing = 0;
                 if (self.player.range.times_left > 0) {
                     self.$refs.audio.currentTime = self.player.range.start/1000;
-                    self.player.range.times_left -= 1;
                     self.$refs.audio.play();
                     self.player.playing = 1;
+                    self.player.range.times_left -= 1;
                 };
             };
         },
@@ -108,6 +108,7 @@ var the_vue = new Vue({
             self.player.range.working = 1;
             self.player.range.times_left = self.player.range.times;
             self.$refs.audio.currentTime = self.player.range.start/1000;
+            self.player.range.times_left -= 1;
             self.$refs.audio.play();
             self.player.playing = 1;
         },
