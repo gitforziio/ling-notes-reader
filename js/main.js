@@ -210,7 +210,7 @@ var the_vue = new Vue({
                 chunk.title_level = current_title_level;
                 if (push_last && last_content) {
                     chunks.push({
-                        "kind": "plain",
+                        "_type": "plain",
                         "origin": last_content,
                         "abs": last_content,
                         "title": current_title,
@@ -222,7 +222,7 @@ var the_vue = new Vue({
                     last_content = "";
                 };
                 if (push_last) {
-                    chunk._au_file = current_au_file;
+                    if (!chunk._au_file) {chunk._au_file = current_au_file;};
                     chunk.idx = idx;
                     if (should_update_title_idx) {current_title_idx = idx};
                     chunk.title_idx = current_title_idx;
@@ -232,6 +232,53 @@ var the_vue = new Vue({
             };
             self.chunks = chunks;
             // console.log(self.chunks);
+            // self.onTestHappy();
+        },
+        onExport: function() {
+            let self = this;
+            let text_list = [];
+            for (let chunk of self.chunks) {
+                if (chunk._type == "br") {
+                    text_list.push("");
+                } else if (chunk._type == "title") {
+                    text_list.push(chunk.origin);
+                } else if (chunk._type == "plain") {
+                    text_list.push(chunk.origin);
+                } else if (chunk._type == "词"||chunk._type == "短"||chunk._type == "句") {
+                    let text = `【${chunk._type}】${chunk.abs}`;
+                    if (chunk._phon) {text += `【phon|${chunk._phon}】`;};
+                    if (chunk._def) {text += `【def|${chunk._def.replace(/【/g, '〖').replace(/】/g, '〗')}】`;};
+                    if (chunk._note) {text += `【note|${chunk._note.replace(/【/g, '〖').replace(/】/g, '〗')}】`;};
+                    if (chunk._au_file) {text += `【au_file|${chunk._au_file}】`;};
+                    if (!isNaN(parseInt(chunk._au_start)) && !isNaN(parseInt(chunk._au_end))) {
+                        text += `【au_range|[${chunk._au_start}, ${chunk._au_end}]】`;
+                    };
+                    text_list.push(text);
+                } else {text_list.push("【???】");};
+            };
+            let text = text_list.join("\n");
+            var file = new File([text], (self.current_file_meta.name), { type: "text/plain; charset=utf-8" });
+            saveAs(file);
+        },
+        onTestHappy: function() {
+            let self = this;
+            let text_list = [];
+            for (let chunk of self.chunks) {
+                if (chunk._type == "br") {
+                    text_list.push("");
+                } else if (chunk._type == "title") {
+                    text_list.push("");
+                } else if (chunk._type == "plain") {
+                    text_list.push("");
+                } else if (chunk._type == "词"||chunk._type == "短"||chunk._type == "句") {
+                    text_list.push(chunk.abs.replace(/\*/g, '').replace(/<u>|<\/u>/g, ''));
+                } else {
+                    text_list.push("");
+                };
+            };
+            let text = text_list.join("\n");
+            var file = new File([text], (`${self.current_file_meta.name}.abs.txt`), { type: "text/plain; charset=utf-8" });
+            saveAs(file);
         },
         makeCC: function(chunk_, cc_) {
             XRegExp.forEach(cc_, /【([^\|]+)\|([^】]+)】/, (match, i) => {
