@@ -14,7 +14,7 @@ var the_vue = new Vue({
             "min": 0,
             "max": 0,
             "range": {
-                "working": 1,
+                "working": 0,
                 "start": 0,
                 "end": 1000,
                 "times": 1,
@@ -74,20 +74,21 @@ var the_vue = new Vue({
             let self = this;
             let audioFileList = document.forms["audio-form"]["audio-input"].files;
             // console.log(audioFileList);
-            let audio_meta_list = [];
-            let idx = 0;
+            let idx = self.audio_meta_list.length || 0;
+            idx -= 1;
             for (let file of audioFileList) {
-                audio_meta_list.push({
+                idx += 1;
+                self.audio_meta_list.push({
                     "idx": idx,
                     "name": file.name,
                     "file": file,
                     "url": URL.createObjectURL(file),
                 });
-                idx += 1;
             }
-            self.audio_meta_list = audio_meta_list;
-            self.current_audio_meta = audio_meta_list[0];
+            self.current_audio_meta = self.audio_meta_list[idx];
             // console.log(self.current_audio_meta);
+            self.player.playing = 0;
+            self.$refs.audio.pause();
         },
         setMeta: function(meta) {
             let self = this;

@@ -4,6 +4,9 @@ body {
 .bodywrap {
     min-height: 100vh;
 }
+.bodywrap {
+    padding-top: 6rem;
+}
 .card-wrap {
     background: #fafafa;
     border: 1px solid #eee;
@@ -14,9 +17,42 @@ body {
 .card-not {
     margin: 0.5rem 0;
 }
-.card-wrap > div > div > p:last-child {
+.card-not > div > p:last-child {
     margin-bottom: 0;
 }
+.chunk-detail > div > p:last-child {
+    margin-bottom: 0;
+}
+.chunk-abs, .chunk-phon {
+    display: inline-block;
+}
+button > p:last-child {
+    margin-bottom: 0;
+}
+.audio-control .btn-group {
+    width: 100%;
+    margin: 0 auto;
+}
+.audio-meta > p {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.audio-meta, .audio-control{
+    margin: 0.5rem 0;
+}
+
+#the-navbar {
+    padding-top: 6em;
+}
+
+/*#page-player {
+    max-height: 6em;
+}*/
+
+
+
 .container.page {
     background: #fff;
 }

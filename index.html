@@ -21,11 +21,41 @@
 
 <div class="bodywrap" id="bodywrap">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="the-navbar">
         <a class="navbar-brand" href="#">ling-notes</a>
-    </nav>
+    </nav> -->
 
-    <div class="container my-5 page hiddent" id="page-audio"><div class="container py-2">
+    <div class="container-fluid page hiddent fixed-top bg-dark text-light" id="page-player" _v-if="current_audio_meta&&current_audio_meta.url"><div class="container py-1">
+        <div class="row audio-wrap" id="audio-wrap">
+            <div class="col-12 col-md-6 audio-meta">
+                <p><span>{{ current_audio_meta.name || '[暂无文件]' }}</span><span v-if="player.range.working">[{{ player.range.start }}-{{ player.range.end }}]</span><span v-if="player.rate != 1">（{{ player.rate }}倍速）</span><span class="hidden">{{ player.currentTime }}</span></p>
+            </div>
+            <div class="col-12 col-md-6 audio-control">
+                <div class="btn-group btn-group-sm">
+                    <button type="button" name="player-Last" id="player-Last" class="btn btn-dark btn-player-ctrl">⏮</button>
+                    <button type="button" name="player-Next" id="player-Next" class="btn btn-dark btn-player-ctrl">⏭</button>
+                    <button type="button" name="player-play" id="player-play" class="btn btn-dark btn-player-ctrl" v-if="1-player.playing" v-on:click="playOrPause()">▶️</button>
+                    <button type="button" name="player-pause" id="player-pause" class="btn btn-dark btn-player-ctrl" v-if="player.playing" v-on:click="playOrPause()">⏸</button>
+                    <button type="button" name="player-jumpLeft" id="player-jumpLeft" class="btn btn-dark btn-player-ctrl">⏪</button>
+                    <button type="button" name="player-jumpRight" id="player-jumpRight" class="btn btn-dark btn-player-ctrl">⏩</button>
+                    <button type="button" name="player-jumpOut" id="player-jumpOut" class="btn btn-dark btn-player-ctrl" v-if="player.range.working" v-on:click="jumpOut()">⤴️</button>
+                    <button type="button" name="player-jumpOut" id="player-jumpOut" class="btn btn-dark btn-player-ctrl" v-if="!player.range.working">🆗</button>
+                    <button type="button" name="player-speedDown" id="player-speedDown" class="btn btn-dark btn-player-ctrl" v-on:click="speedDown()">⏬</button>
+                    <button type="button" name="player-speedUp" id="player-speedUp" class="btn btn-dark btn-player-ctrl" v-on:click="speedUp()">⏫</button>
+                </div>
+            </div>
+        </div>
+        <div class="row audio-wrap my-3 hidden" id="audio-wrap">
+            <div class="col audio-box">
+                <audio ref="audio" _v-on:timeupdate="onTimeUpdate" _v-if="current_audio_meta.url" :src="current_audio_meta.url||null" :id="`audio`" controls="controls" :loop="player.loop">[您的浏览器不支持 h5 的 audio 标签。]</audio>
+            </div>
+        </div>
+    </div></div>
+
+    <!-- <div class="container my-5 page hiddent" id="page-audio"><div class="container py-2">
+    </div></div> -->
+
+    <div class="container my-5 page hiddent" id="page-import"><div class="container py-2">
         <div class="row">
             <div class="col">
                 <form name="audio-form" class="container">
@@ -34,37 +64,12 @@
                             <input type="file" class="form-control" name="audio-input" id="audio-input" multiple="multiple" accept="audio/*" />
                         </div>
                         <div class="btn-group col-md-4 my-2">
-                            <button type="button" name="do_import_audio" id="do_import_audio" class="btn btn-primary" v-on:click="onImportAudio">载入</button>
+                            <button type="button" name="do_import_audio" id="do_import_audio" class="btn btn-primary" v-on:click="onImportAudio">💽</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-    </div></div>
-
-    <div class="container my-5 page hiddent" id="page-player" _v-if="current_audio_meta&&current_audio_meta.url"><div class="container py-2">
-        <div class="row audio-wrap my-3" id="audio-wrap">
-            <div class="col audio-box">
-                <audio ref="audio" _v-on:timeupdate="onTimeUpdate" _v-if="current_audio_meta.url" :src="current_audio_meta.url||null" :id="`audio`" controls="controls" :loop="player.loop">[您的浏览器不支持 h5 的 audio 标签。]</audio>
-            </div>
-        </div>
-        <div class="row audio-wrap my-3" id="audio-wrap">
-            <div class="col audio-file-name">
-                <p><span>{{ current_audio_meta.name }}</span><span v-if="player.range.working">[{{ player.range.start }}-{{ player.range.end }}]</span><span v-if="player.rate != 1">（{{ player.rate }}倍速）</span><span>{{ player.currentTime }}</span></p>
-            </div>
-            <div class="col audio-control">
-                <div class="btn-group btn-group-sm">
-                    <button type="button" name="player-play" id="player-play" class="btn btn-light" v-if="1-player.playing" v-on:click="playOrPause()">播放</button>
-                    <button type="button" name="player-pause" id="player-pause" class="btn btn-light" v-if="player.playing" v-on:click="playOrPause()">暂停</button>
-                    <button type="button" name="player-jumpOut" id="player-jumpOut" class="btn btn-light" v-on:click="jumpOut()">跳出</button>
-                    <button type="button" name="player-speedDown" id="player-speedDown" class="btn btn-light" v-on:click="speedDown()">减速</button>
-                    <button type="button" name="player-speedUp" id="player-speedUp" class="btn btn-light" v-on:click="speedUp()">加速</button>
-                </div>
-            </div>
-        </div>
-    </div></div>
-
-    <div class="container my-5 page hiddent" id="page-import"><div class="container py-2">
         <div class="row">
             <div class="col">
                 <form name="file-form" class="container">
@@ -74,9 +79,9 @@
                             <input type="file" class="form-control" name="file-input" id="file-input" multiple="multiple" data-accept=".json, .md, .txt" />
                         </div>
                         <div class="btn-group col-md-4 my-2">
-                            <button type="button" name="do_import" id="do_import" class="btn btn-primary" v-on:click="onImport">导入</button>
-                            <button type="button" name="do_export" id="do_export" class="btn btn-info" v-on:click="onExport">导出</button>
-                            <button type="button" name="do_toggle" id="do_toggle" class="btn btn-secondary" v-on:click="readonly=(1-readonly)">换视</button>
+                            <button type="button" name="do_import" id="do_import" class="btn btn-primary" v-on:click="onImport">📥</button>
+                            <button type="button" name="do_export" id="do_export" class="btn btn-info" v-on:click="onExport">📤</button>
+                            <button type="button" name="do_toggle" id="do_toggle" class="btn btn-secondary" v-on:click="readonly=(1-readonly)">🖊</button>
                         </div>
                     </div>
                 </form>
@@ -91,10 +96,11 @@
                     <div :class="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句') ? 'card-wrap' : 'card-not'">
                         <div v-if="chunk._type=='title'||chunk._type=='plain'" v-html="markup(chunk.origin)">
                         </div>
-                        <div v-if="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句')" v-on:click="playRange(chunk)">
-                            <div class="chunk-abs" v-html="markup(chunk.abs)"></div>
-                            <div class="chunk-phon" v-html="markup(chunk._phon)" v-if="chunk._phon"></div>
-                            <div class="chunk-def" v-html="markup(chunk._def)" v-if="chunk._def"></div>
+                        <div v-if="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句')">
+                            <div class="chunk-detail chunk-abs"><div v-html="markup(chunk.abs)"></div></div>
+                            <div class="chunk-detail chunk-phon"><button vv-if="chunk._phon" type="button" class="btn btn-sm btn-light" v-on:click="playRange(chunk)" v-html="chunk._phon ? markup(chunk._phon) : '<p>▶️</p>'"></button></div>
+                            <div class="chunk-detail chunk-def"><div v-html="markup(chunk._def)" v-if="chunk._def"></div></div>
+                            <!-- <div class="chunk-detail chunk-play"></div> -->
                         </div>
                     </div>
                 </div>
