@@ -32,8 +32,8 @@
             </div>
             <div class="col-12 col-md-6 audio-control">
                 <div class="btn-group btn-group-sm">
-                    <button type="button" name="player-Last" id="player-Last" class="btn btn-dark btn-player-ctrl">⏮</button>
-                    <button type="button" name="player-Next" id="player-Next" class="btn btn-dark btn-player-ctrl">⏭</button>
+                    <button type="button" name="player-Last" id="player-Last" class="btn btn-dark btn-player-ctrl" v-on:click="playerLast()">⏮</button>
+                    <button type="button" name="player-Next" id="player-Next" class="btn btn-dark btn-player-ctrl" v-on:click="playerNext()">⏭</button>
                     <button type="button" name="player-play" id="player-play" class="btn btn-dark btn-player-ctrl" v-if="1-player.playing" v-on:click="playOrPause()">▶️</button>
                     <button type="button" name="player-pause" id="player-pause" class="btn btn-dark btn-player-ctrl" v-if="player.playing" v-on:click="playOrPause()">⏸</button>
                     <button type="button" name="player-jumpLeft" id="player-jumpLeft" class="btn btn-dark btn-player-ctrl">⏪</button>

@@ -45,12 +45,12 @@ var the_vue = new Vue({
         addEventListeners: function() {
             let self = this;
             self.$refs.audio.addEventListener('timeupdate', self.onTimeUpdate);
-            self.$refs.audio.addEventListener('canplay', self._durationUpdate);
+            self.$refs.audio.addEventListener('canplay', self.onDurationUpdate);
         },
         removeEventListeners: function() {
             let self = this;
             self.$refs.audio.removeEventListener('timeupdate', self.onTimeUpdate);
-            self.$refs.audio.removeEventListener('canplay', self._durationUpdate);
+            self.$refs.audio.removeEventListener('canplay', self.onDurationUpdate);
         },
         onTimeUpdate: function() {
             let self = this;
@@ -69,6 +69,10 @@ var the_vue = new Vue({
         onDurationUpdate: function() {
             let self = this;
             self.player.duration = self.$refs.audio.duration;
+            if (self.player.playing) {
+                console.log("should_play!");
+                self.$refs.audio.play();
+            }
         },
         onImportAudio: function() {
             let self = this;
@@ -125,6 +129,40 @@ var the_vue = new Vue({
         jumpOut: function() {
             let self = this;
             self.player.range.working = 0;
+        },
+        playerLast: function() {
+            let self = this;
+            //
+            self.player.range.working = 0;
+            self.$refs.audio.pause();
+            self.player.playing = 0;
+            //
+            let idx = self.current_audio_meta.idx - 1;
+            if (idx < 0) { idx = self.audio_meta_list.length-1;};
+            self.current_audio_meta = self.audio_meta_list[idx];
+            //
+            // // console.log(self.$refs.audio);
+            // self.$refs.audio.pause();
+            // self.player.playing = 0;
+            self.player.playing = 1;
+            self.$refs.audio.play();
+        },
+        playerNext: function() {
+            let self = this;
+            //
+            self.player.range.working = 0;
+            self.$refs.audio.pause();
+            self.player.playing = 0;
+            //
+            let idx = self.current_audio_meta.idx + 1;
+            if (idx >= self.audio_meta_list.length) { idx = 0;};
+            self.current_audio_meta = self.audio_meta_list[idx];
+            //
+            // // console.log(self.$refs.audio);
+            // self.$refs.audio.pause();
+            // self.player.playing = 0;
+            self.player.playing = 1;
+            self.$refs.audio.play();
         },
         speedUp: function() {
             let self = this;
