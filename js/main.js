@@ -65,12 +65,13 @@ var the_vue = new Vue({
                     self.player.range.times_left -= 1;
                 };
             };
+            // TODO: 最后一个单词如果结束时整个音频也结束的话，可能会从音频的开头开始循环播放。
         },
         onDurationUpdate: function() {
             let self = this;
             self.player.duration = self.$refs.audio.duration;
             if (self.player.playing) {
-                console.log("should_play!");
+                // console.log("should_play!");
                 self.$refs.audio.play();
             }
         },
@@ -96,6 +97,8 @@ var the_vue = new Vue({
         },
         setMeta: function(meta) {
             let self = this;
+            self.player.playing = 0;
+            self.$refs.audio.pause();
             let au = self.audio_meta_list.filter(m => m.name == meta._au_file)[0];
             if (au) {self.current_audio_meta = au};
             let audio_start = parseInt(meta._au_start);
@@ -106,9 +109,13 @@ var the_vue = new Vue({
                 self.player.range.start = au_start;
                 self.player.range.end = au_end;
             };
+            self.player.playing = 0;
+            self.$refs.audio.pause();
         },
         playRange: function(meta) {
             let self = this;
+            self.player.playing = 0;
+            self.$refs.audio.pause();
             self.setMeta(meta);
             self.player.range.working = 1;
             self.player.range.times_left = self.player.range.times;
