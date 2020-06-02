@@ -92,11 +92,11 @@
     <div class="container my-5 py-2 page" id="page-read" :class="{'hidden': readonly ? false : true}"><div class="container py-1">
 
             <div class="row my-1">
-                <div v-for="chunk in chunks" class="col" :class="(chunk._type=='词') ? 'col-6 col-md-3' : ((chunk._type=='句') ? 'col-12 col-lg-6' : ((chunk._type=='短') ? 'col-12 col-md-6 col-xl-3' : 'col-12'))">
-                    <div :class="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句') ? 'card-wrap' : 'card-not'">
+                <div v-for="chunk in chunks" class="col" :class="(chunk._type=='词'||chunk._type=='发') ? 'col-6 col-md-3' : ((chunk._type=='句') ? 'col-12 col-lg-6' : ((chunk._type=='短') ? 'col-12 col-md-6 col-xl-3' : 'col-12'))">
+                    <div :class="(chunk._type=='词'||chunk._type=='发'||chunk._type=='短'||chunk._type=='句') ? 'card-wrap' : 'card-not'">
                         <div v-if="chunk._type=='title'||chunk._type=='plain'" v-html="markup(chunk.origin)">
                         </div>
-                        <div v-if="(chunk._type=='词'||chunk._type=='短'||chunk._type=='句')">
+                        <div v-if="(chunk._type=='词'||chunk._type=='发'||chunk._type=='短'||chunk._type=='句')">
                             <div class="chunk-detail chunk-abs"><div v-html="markup(chunk.abs)"></div></div>
                             <div class="chunk-detail chunk-phon"><button vv-if="chunk._phon" type="button" class="btn btn-sm btn-light" v-on:click="playRange(chunk)" v-html="chunk._phon ? markup(chunk._phon) : '<p>▶️</p>'"></button></div>
                             <div class="chunk-detail chunk-def"><div v-html="markup(chunk._def)" v-if="chunk._def"></div></div>
