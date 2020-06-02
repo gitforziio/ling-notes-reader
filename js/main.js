@@ -233,7 +233,7 @@ var the_vue = new Vue({
                 } else if (line.slice(0, 3) == "【音】") {
                     current_au_file = line.slice(3);
                     push_last = false;
-                } else if (line.slice(0, 3) == "【词】"||line.slice(0, 3) == "【短】"||line.slice(0, 3) == "【句】") {
+                } else if (line.slice(0, 3) == "【词】"||line.slice(0, 3) == "【发】"||line.slice(0, 3) == "【短】"||line.slice(0, 3) == "【句】") {
                     chunk._type = line.slice(1, 2);//"word";"phrase";"sentence";
                     let cc = line.slice(3);
                     self.makeCC(chunk, cc);
@@ -283,7 +283,7 @@ var the_vue = new Vue({
                     text_list.push(chunk.origin);
                 } else if (chunk._type == "plain") {
                     text_list.push(chunk.origin);
-                } else if (chunk._type == "词"||chunk._type == "短"||chunk._type == "句") {
+                } else if (chunk._type == "词"||chunk._type == "发"||chunk._type == "短"||chunk._type == "句") {
                     let text = `【${chunk._type}】${chunk.abs}`;
                     if (chunk._phon) {text += `【phon|${chunk._phon}】`;};
                     if (chunk._def) {text += `【def|${chunk._def.replace(/【/g, '〖').replace(/】/g, '〗')}】`;};
@@ -311,7 +311,7 @@ var the_vue = new Vue({
                     text_list.push("");
                 } else if (chunk._type == "plain") {
                     text_list.push("");
-                } else if (chunk._type == "词"||chunk._type == "短"||chunk._type == "句") {
+                } else if (chunk._type == "词"||chunk._type == "发"||chunk._type == "短"||chunk._type == "句") {
                     text_list.push(chunk.abs.replace(/\*/g, '').replace(/<u>|<\/u>/g, ''));
                 } else {
                     text_list.push("");
