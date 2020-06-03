@@ -1,12 +1,15 @@
 body {
     background: #eee;
 }
+#footer {
+    padding-bottom: 6rem;
+}
 .bodywrap {
     min-height: 100vh;
 }
-.bodywrap {
+/*.bodywrap {
     padding-top: 6rem;
-}
+}*/
 .card-wrap {
     background: #fafafa;
     border: 1px solid #eee;

@@ -25,7 +25,7 @@
         <a class="navbar-brand" href="#">ling-notes</a>
     </nav> -->
 
-    <div class="container-fluid page hiddent fixed-top bg-dark text-light" id="page-player" _v-if="current_audio_meta&&current_audio_meta.url"><div class="container py-1">
+    <div class="container-fluid page hiddent fixed-bottom bg-dark text-light" id="page-player" _v-if="current_audio_meta&&current_audio_meta.url"><div class="container py-1">
         <div class="row audio-wrap" id="audio-wrap">
             <div class="col-12 col-md-6 audio-meta">
                 <p><span>{{ current_audio_meta.name || '[暂无文件]' }}</span><span v-if="player.range.working">[{{ player.range.start }}-{{ player.range.end }}]</span><span v-if="player.rate != 1">（{{ player.rate }}倍速）</span><span class="hidden">{{ player.currentTime }}</span></p>
@@ -55,7 +55,7 @@
     <!-- <div class="container my-5 page hiddent" id="page-audio"><div class="container py-2">
     </div></div> -->
 
-    <div class="container my-5 page hiddent" id="page-import"><div class="container py-2">
+    <div class="container my-1 page hiddent" id="page-import"><div class="container py-2">
         <div class="row">
             <div class="col">
                 <form name="audio-form" class="container">
@@ -140,7 +140,7 @@
 
 
 
-<footer class="pt-4 pb-2 bg-dark text-white" id="footer">
+<footer class="pt-4 bg-dark text-white" id="footer">
     <div class="container text-center">
         <p>Github: <a href="https://github.com/gitforziio/ling-notes-reader" target="_blank">@gitforziio/ling-notes-reader</a></p>
     </div>
